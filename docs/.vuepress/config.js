@@ -7,6 +7,18 @@ module.exports = {
           { text: 'Home', link: '/' },
           { text: 'Guide', link: '/guide/' },
           { text: 'External', link: 'https://google.com' },
-        ]
+        ],
+        sidebarDepth: 1,
+        sidebar: {
+          '/components/': [
+            {
+              title:"组件",
+              collapsable: false,
+              children:[
+                "/components/button"
+              ]
+            }
+          ]
+        }
     }
 }

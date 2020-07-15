@@ -8,7 +8,8 @@
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:build": "vuepress build docs",
+    "lib": "vue-cli-service build --dest ./lib --target lib --name izk-ui  ./packages/index.js"
   },
   "dependencies": {
     "core-js": "^3.6.5",
