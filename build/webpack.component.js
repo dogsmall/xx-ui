@@ -1,6 +1,7 @@
 const { VueLoaderPlugin } = require('vue-loader')
 const webpack = require('webpack')
 const path = require('path')
+// 排除node_modules中的所有库
 const nodeExternals = require('webpack-node-externals')
 
 // 读取components文件夹下的所有文件

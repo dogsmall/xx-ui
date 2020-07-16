@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <xx-button>guoshiwei</xx-button>
+    <xx-button>测试</xx-button>
   </div>
 </template>
 

@@ -1,0 +1,15 @@
+.*
+*.md
+*.yml
+build/
+node_modules/
+tests/
+docs/
+assets/
+public/
+src/
+babel.config.js
+gulpfile.js
+jest.config.js
+vue.config.js
+*.lock

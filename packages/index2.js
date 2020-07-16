@@ -1,7 +1,9 @@
 import Button from './button/index'
+import Input from './input/index'
 import { version } from '../package.json'
 const components = {
-  Button
+  Button,
+  Input
 }
 
 const install = function (Vue) {
@@ -18,7 +20,8 @@ if (typeof window !== 'undefined' && window.Vue) {
 }
 
 export {
-  Button
+  Button,
+  Input
 }
 
 export default {

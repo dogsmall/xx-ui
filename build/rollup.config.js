@@ -6,15 +6,29 @@ import babel from 'rollup-plugin-babel'
 // ugilfy不支持es转换 采用terser
 import { terser } from 'rollup-plugin-terser'
 
-const outputFormat = process.env.format || 'es'
-const minify = process.env.minify || false
-const fileSuffix = minify ? '.min' : ''
-
-export default {
+export default [{
   input: './packages/index2.js',
   output: {
-    file: `lib/xx-rollup-ui.${outputFormat}${fileSuffix}.js`,
-    format: outputFormat,
+    file: 'lib/xx-ui.es.js',
+    format: 'es'
+  },
+  plugins: [
+    resolve({ extensions: ['.vue'] }),
+    commonjs(),
+    vue(),
+    json(),
+    // 避免获取外部的.babelrc文件
+    babel({
+      babelrc: false,
+      presets: [['env', { modules: false }]]
+    }),
+    process.env.minify && terser()
+  ]
+}, {
+  input: './packages/index2.js',
+  output: {
+    file: 'lib/xx-ui.umd.js',
+    format: 'umd',
     name: 'xx-ui'
   },
   plugins: [
@@ -29,4 +43,4 @@ export default {
     }),
     process.env.minify && terser()
   ]
-}
+}]
