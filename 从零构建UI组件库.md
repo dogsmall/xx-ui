@@ -45,9 +45,110 @@ vue create xx-ui
 
 
 
+### 调整文件结构
+
+```
+|- build/  # webpack打包配置
+	|- gulp.css.js 打包css样式
+	|- rollup.config.js 打包组件库js
+	|- webpack.component.js 单独打包组件js
+|- docs/  # 存放文档
+	|- .vuepress/  # vuepress配置目录
+	|- component/ # 组件相关的文档放这里
+	|- README.md # 静态首页
+|- packages/
+	|-index.js #全部组件库入口
+	|-button/
+		|-src/
+			|- button.vue
+		|-index.js # 单个组件库入口
+	|- theme-chalk # css样式文件夹
+|- src/ # 在这里写展示demo代码
+|- test/  # 测试文件夹
+	|- unit/  # 存放所有的测试用例
+|- .npmignore
+|- .gitignore
+|- .babelrc
+|- README.md
+|- package.json
+```
+
+
+
 ### 组件
 
+现在在packages文件夹里写个button组件
 
+##### 注意点:
+
+1. 样式分离,css部分单独放到theme-chalk/button.less
+   1. css不嵌套在vue文件里,方便对组件样式的单独打包,方便按需加载
+   2. 单独分离出样式组件进行管理,方便后续对组件进行换肤
+   3. 单独分离出样式文件,方便统一管理
+2. 组件内定义name属性
+   1. 组件内的name决定了之后组件的标签名,方便之后引入
+3. 组件内index.js文件单独引入
+   1. 方便对组件单独打包,实现按需加载
+4. 组件外index.js全部引入
+   1. 统一打包
+
+```js
+//index2.js
+import Button from './button/index'
+import { version } from '../package.json'
+const components = {
+  Button
+}
+
+const install = function (Vue) {
+  if (install.installed) return
+  Object.keys(components).forEach(key => {
+    Vue.component(components[key].name, components[key])
+  })
+  install.installed = true
+}
+
+/* istanbul ignore if */
+if (typeof window !== 'undefined' && window.Vue) {
+  install(window.Vue)
+}
+
+export {
+  Button
+}
+
+export default {
+  version,
+  install
+}
+
+```
+
+```js
+// index.js webpack可以识别requireComponent获取的组件
+import { version } from '../package.json'
+const requireComponent = require.context('.', true, /\.vue/)
+
+const install = Vue => {
+  requireComponent.keys().forEach(fileName => {
+    console.log(fileName)
+    const config = requireComponent(fileName)
+    console.log(config.default.name)
+    Vue.component(config.default.name, config.default)
+  })
+}
+
+/* istanbul ignore if */
+if (typeof window !== 'undefined' && window.Vue) {
+  install(window.Vue)
+}
+// console.log(obj)
+export default {
+  install,
+  version
+}
+
+```
 
 
 
@@ -79,58 +180,57 @@ describe('Button', () => {
 
 ### 打包
 
-##### css 打包
+**Rollup** vs **Webpack** vs **Gulp**
+
+##### 都是打包工具这三个有什么区别吗?
+
+1. Rollup:下一代 ES6 模块化工具,体积小,<span style="color:red">可以打包成ES模块</span>,缺点不支持多入口打包
+2. Webpack:功能强大,<span style="color:red">支持多入口打包</span>,配置项多,侧重于依赖管理,比Rollup配置复杂,且不支持ES模块打包(webpack4.0开始支持了)
+3. Gulp:是基于“流”的自动化构建工具,<span style="color:red">支持css文件为入口</span>
 
 
 
-```js
-// gulp.css.js
-const gulp = require('gulp');
-const { src, dest } = require('gulp');
-const less = require('gulp-less');
-const cssmin = require('gulp-cssmin');
-// const rename = require('gulp-rename');
-const concat = require('gulp-concat');
+##### 结论
 
-function compileCss() {
-  return src('./packages/theme-chalk/*.less')
-    .pipe(less())
-    .pipe(cssmin())
-    .pipe(dest('./lib/theme-chalk'));
-}
+Rollup用来整库js
 
-function compileAll() {
-  return src('./packages/theme-chalk/index.less')
-    .pipe(less())
-    .pipe(concat('index.css'))
-    .pipe(cssmin())
-    .pipe(dest('./lib/theme-chalk'));
-}
-```
+webpack 用来单个组件打包,实现按需加载
+
+Gulp 打包css
+
+
 
 ##### js 打包
 
-
+1. 最简单的webpack打包
 
 ```js
-import resolve from 'rollup-plugin-node-resolve'; // 告诉 Rollup 如何查找外部模块
-import commonjs from 'rollup-plugin-commonjs'; // 支持对commonj模块的加载
-import vue from 'rollup-plugin-vue'; // 处理vue文件
-import json from 'rollup-plugin-json'; // 处理package.json
-import babel from 'rollup-plugin-babel';
-// ugilfy不支持es转换 采用terser
-import { terser } from 'rollup-plugin-terser';
+// package.json 新增命令
+"lib": "vue-cli-service build --dest ./lib --target lib --name xx-ui  ./packages/index.js"
+```
 
-const outputFormat = process.env.format || 'es';
-const minify = process.env.minify || false;
-const fileSuffix = minify ? '.min' : '';
+2. Rollup 打包
+
+```js
+// rollup.config.js rollup 模块打包
+import resolve from 'rollup-plugin-node-resolve' // 告诉 Rollup 如何查找外部模块
+import commonjs from 'rollup-plugin-commonjs' // 支持对commonj模块的加载
+import vue from 'rollup-plugin-vue' // 处理vue文件
+import json from 'rollup-plugin-json' // 处理package.json
+import babel from 'rollup-plugin-babel'
+// ugilfy不支持es转换 采用terser
+import { terser } from 'rollup-plugin-terser'
+
+const outputFormat = process.env.format || 'es'
+const minify = process.env.minify || false
+const fileSuffix = minify ? '.min' : ''
 
 export default {
-  input: './packages/index.js',
+  input: './packages/index2.js',
   output: {
-    file: `lib/izk-ui.${outputFormat}${fileSuffix}.js`,
-    format: outputFormat.trim(),
-    name: 'izk-ui'
+    file: `lib/xx-rollup-ui.${outputFormat}${fileSuffix}.js`,
+    format: outputFormat,
+    name: 'xx-ui'
   },
   plugins: [
     resolve({ extensions: ['.vue'] }),
@@ -144,11 +244,11 @@ export default {
     }),
     process.env.minify && terser()
   ]
-};
+}
 
 ```
 
-
+3. webpack分包加载
 
 ```js
 // webpack.component.js
@@ -229,7 +329,67 @@ module.exports = {
 
 ```
 
+##### css 打包
 
+```js
+// gulp.css.js
+
+const gulp = require('gulp')
+const { src, dest } = require('gulp')
+const less = require('gulp-less')
+const cssmin = require('gulp-cssmin')
+const concat = require('gulp-concat')
+
+const path = require('path')
+const fs = require('fs')
+// 读取theme-chalk文件里的所有less文件
+const items = fs.readdirSync('./packages/theme-chalk')
+
+const files = items.filter(item => !fs.statSync(path.resolve('./packages/theme-chalk', item)).isDirectory())
+const entryHash = {}
+if (files.length > 0) {
+  files.forEach(ele => {
+    if (ele !== 'index.less') {
+      entryHash[ele] = `./packages/theme-chalk/${ele}`
+    }
+  })
+}
+// 全部打包组件样式
+function compileAll () {
+  return src('./packages/theme-chalk/index.less')
+    .pipe(less())
+    .pipe(concat('xx-ui.css'))
+    .pipe(cssmin())
+    .pipe(dest('./lib/styles'))
+}
+// 单独打包组件样式
+function compileCss (cb) {
+  for (const key in entryHash) {
+    src(entryHash[key])
+      .pipe(less())
+      .pipe(cssmin())
+      .pipe(dest('./lib/styles'))
+  }
+  cb()
+}
+gulp.task('css', compileCss)
+gulp.task('all', compileAll)
+```
+
+最外层添加gulp的配置入口文件
+
+```js
+//gulpfile.js
+require('./build/gulp.css.js')
+```
+
+##### 结论
+
+1. 只用webpack来实现打包 优点是不需要维护组件库的引入,自动引入所有组件,缺点是打包出来的体积大
+
+2. 用rollup来打包,优点是体积小,但是需要维护组件引入需要额外的维护(写脚本读取文件夹目录),后续还需要用webpack单独组件打包
+
+   
 
 ### 版本控制
 

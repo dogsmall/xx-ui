@@ -11,11 +11,11 @@ const minify = process.env.minify || false
 const fileSuffix = minify ? '.min' : ''
 
 export default {
-  input: './packages/index.js',
+  input: './packages/index2.js',
   output: {
-    file: `lib/izk-ui.${outputFormat}${fileSuffix}.js`,
-    format: outputFormat.trim(),
-    name: 'izk-ui'
+    file: `lib/xx-rollup-ui.${outputFormat}${fileSuffix}.js`,
+    format: outputFormat,
+    name: 'xx-ui'
   },
   plugins: [
     resolve({ extensions: ['.vue'] }),

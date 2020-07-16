@@ -6,6 +6,7 @@
 
 <script>
 export default {
-  name: 'izk-button'
+  name: 'xx-button',
+  componentName: 'Button'
 }
 </script>

@@ -2,7 +2,6 @@ const { VueLoaderPlugin } = require('vue-loader')
 const webpack = require('webpack')
 const path = require('path')
 const nodeExternals = require('webpack-node-externals')
-// const TerserJSPlugin = require('terser-webpack-plugin')
 
 // 读取components文件夹下的所有文件
 const fs = require('fs')
