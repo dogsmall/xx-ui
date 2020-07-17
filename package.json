@@ -1,6 +1,6 @@
 {
   "name": "@dogsmall/xx-ui",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -55,6 +55,7 @@
     "rollup-plugin-uglify": "^6.0.3",
     "rollup-plugin-vue": "^5.0.1",
     "vue-template-compiler": "^2.6.11",
+    "vuepress": "^1.5.2",
     "webpack-cli": "^3.3.12",
     "webpack-node-externals": "^2.5.0"
   },

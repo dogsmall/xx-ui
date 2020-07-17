@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 
 import xxUI from '@dogsmall/xx-ui'
-import '@dogsmall/xx-ui/lib/styles/xx-ui.css'
+import '@dogsmall/xx-ui/styles/xx-ui.css'
 Vue.use(xxUI)
 
 Vue.config.productionTip = false

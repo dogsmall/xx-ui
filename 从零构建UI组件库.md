@@ -1,5 +1,5 @@
 <center>从零开始搭建UI组件库</center>
-### 组件库的价值
+## 组件库的价值
 1. 保证产品体验的一致性：对于一个含有多业务系统的大型复杂产品，每个独立的业务系统虽然在功能上有一定区别，但整体的用户体验需要满足基本的一致性。比如，当我使用同一个产品中的业务系统 A 和业务系统 B 时，我能通过类似的页面结构、组件及样式的一致性、操作反馈乃至提示文案结构的一致性，来感知到我使用的A、B业务系统隶属于同一个产品。
 2. 提升设计师的效率：在需求量巨大且需求来自不同的业务线时，需要逐一绘制页面及组件，造成大量重复劳动，并且在评审及需求沟通环节还可能存在不断地细节调优。所以对于设计师而言，组件的高频复用能大大提升设计效率，使设计师更多的将精力聚焦于理解和解决用户的实际问题。
 3. 提升产研团队的效率：通用场景及普通需求直接按规范进行设计和研发，减少上下游对同一页面及组件使用方式的不同理解而产生的多余沟通成本。
@@ -18,22 +18,24 @@
 ### Tasking
 
 1. 组件
-   1. js/css
    2. 文件目录结构
-2. 测试
-   1. TDD
-   2. BDD
-3. 组件库文档
-   1. vuepress
+   2. **样式分离**
 4. 打包
-   1. 打包工具选择
-   2. 按需加载
-   3. 打包输出目录结构  --> 影响引入使用的babel包
+   1. **打包工具选择**
+   2. **按需加载**
+   3. 打包输出目录结构  --> 配合babel 插件
    4. 打包结果
 5. 发布
    1. npm 发布
    2. npm 升级
    3. npm 注销
+4. 验证组件库是否成功
+   1. 全局安装是否成功
+   2. 按需加载是否成功
+5. 测试
+   1. TDD
+6. 组件库文档
+   1. vuepress
 
 
 
@@ -484,6 +486,22 @@ Vue.use(xxUI)
 
 ### 组件库文档
 
+##### 组件文档要有什么功能
+
+1. 使用说明
+2. 展示demo
+3. demo的code
+4. 使用参数和方法
+
+
+
+#### 组件库文档选型
+
+1. vue实现,优点是交互灵活,样式自由,确定是工作量大,自己维护的地方比较多
+2. 静态模板编译
+   1. gitbook
+   2. vuepress
+
 <b>[vuepress](https://vuepress.vuejs.org/zh/)</b>
 
 安装vuepress
@@ -511,29 +529,54 @@ vuepress的配置
 // config.js
 module.exports = {
     base:"/",
-    title:"guo-ui",
+    title:"xx-ui",
     description:"一个vue h5框架",
     themeConfig: {
         nav: [
           { text: 'Home', link: '/' },
           { text: 'Guide', link: '/guide/' },
+          { text: '组件', link: '/components/' },
           { text: 'External', link: 'https://google.com' },
         ],
         sidebarDepth: 1,
         sidebar: {
           '/components/': [
             {
+              title:"向导",
+              collapsable: false,
+              children:[
+               "/components/install"
+              ]
+            },
+            {
               title:"组件",
               collapsable: false,
               children:[
-                "/components/button"
+                "/components/button",
+                "/components/input"
               ]
             }
-          ]
+          ],
         }
     }
 }
 ```
+
+Vuepress 默认支持vue文件组件,方便我们写组件文档
+
+##### 自动化生成文档
+
+
+
+
+
+### 还有哪些方面
+
+1. 版本控制
+
+2. 版本记录
+3. 国际化
+4. 类型定义
 
 
 
